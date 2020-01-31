@@ -76,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
         // initialize the fusedLocationProviderClient
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
+        buildLocationRequest();
+        buildLocationCallBack();
+
         // initialize the location Manager
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -136,24 +139,19 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
-                // TODO: Consider calling
-                //    Activity#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for Activity#requestPermissions for more details.
-                return;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
             }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }
-
     }
 
  */
+
+ /*
+ * the other way with fusedLocationProviderClient
+ * */
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -166,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
             buildLocationCallBack();
         } else {
             // permission is denied
-            showSnakbar(R.string.warning_txt, R.string.setting, new View.OnClickListener() {
+            showSnackbar(R.string.warning_txt, R.string.setting, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // build intent
@@ -181,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
 
     private void buildLocationRequest() {
         locationRequest = new LocationRequest();
@@ -216,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "requestPermission: " + "Displaying the permission rationale");
             // provide a way so that user can grant permission
 
-            showSnakbar(R.string.warning_txt, android.R.string.ok, new View.OnClickListener() {
+            showSnackbar(R.string.warning_txt, android.R.string.ok, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startLocationPermissionRequest();
@@ -249,17 +248,9 @@ public class MainActivity extends AppCompatActivity {
                 "/" + String.valueOf(location.getLongitude()));
     }
 
-    private void showSnakbar(final int mainStringID, final int actionStringID, View.OnClickListener listener) {
+    private void showSnackbar(final int mainStringID, final int actionStringID, View.OnClickListener listener) {
         Snackbar.make(findViewById(android.R.id.content),
                         getString(mainStringID),
                         Snackbar.LENGTH_INDEFINITE).setAction(actionStringID, listener).show();
     }
-
-
-
-
-
-
-
-
 }
